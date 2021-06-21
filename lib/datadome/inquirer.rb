@@ -5,9 +5,10 @@ require "rack"
 module Datadome
   class Inquirer
 
-    def initialize(env, exclude_matchers: nil, include_matchers: nil)
+    def initialize(env, exclude_matchers: nil, include_matchers: nil, monitoring_mode: false)
       @env = env
 
+      @monitoring_mode = monitoring_mode
       @exclude_matchers = exclude_matchers || Datadome.configuration.exclude_matchers
       @include_matchers = include_matchers || Datadome.configuration.include_matchers
     end
@@ -60,7 +61,7 @@ module Datadome
     end
 
     def intercept?
-      @validation_response.pass == false || @validation_response.redirect
+      @monitoring_mode == false && (@validation_response.pass == false || @validation_response.redirect)
     end
 
     def inquire
